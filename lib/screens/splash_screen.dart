@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
+import '../routes/app_routes.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,16 +12,9 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _navigateToNextScreen();
-  }
-
-  void _navigateToNextScreen() {
     Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
     });
   }
 
@@ -33,13 +26,11 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Replace app icon with asset logo. Put your `logo.png` in `assets/images/`.
             Image.asset(
               'assets/images/logo.png',
               width: 90,
               height: 90,
               fit: BoxFit.contain,
-              // If the asset is missing, show the original icon inside a white rounded box.
               errorBuilder: (context, error, stackTrace) {
                 return Container(
                   width: 100,
