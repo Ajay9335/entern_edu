@@ -1,8 +1,37 @@
 import 'package:flutter/material.dart';
 import '../routes/app_routes.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  bool _obscurePassword = true;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _onLoginPressed() {
+    // Day 6 will add real validation + auth logic here.
+    debugPrint('Login pressed');
+    debugPrint('Email: ${_emailController.text}');
+    debugPrint('Password: ${_passwordController.text}');
+  }
+
+  void _onForgotPasswordPressed() {
+    // Wire this to AppRoutes.forgotPassword once that screen exists (Day 11)
+    debugPrint('Navigate to Forgot Password screen');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +81,11 @@ class LoginScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(height: 32),
-                TextField(
+
+                // Email field
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     labelText: 'Email',
                     prefixIcon: const Icon(Icons.email_outlined),
@@ -64,11 +97,26 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                TextField(
-                  obscureText: true,
+
+                // Password field
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     labelText: 'Password',
                     prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -77,10 +125,12 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
+
+                // Login button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: _onLoginPressed,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2F80ED),
                       foregroundColor: Colors.white,
@@ -93,11 +143,15 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
+
+                // Forgot password
                 TextButton(
-                  onPressed: () {},
+                  onPressed: _onForgotPasswordPressed,
                   child: const Text('Forgot Password?'),
                 ),
                 const SizedBox(height: 8),
+
+                // Sign up link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
