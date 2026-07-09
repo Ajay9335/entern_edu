@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../routes/app_routes.dart';
+import '../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -9,12 +10,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>(); // 👈 NEW: needed for validation
+  final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
+  bool _isSubmitting =
+      false; // 👈 NEW: loading state while checking credentials
 
   @override
   void dispose() {
@@ -23,24 +26,37 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _onLoginPressed() {
-    // 👇 NEW: run validation before proceeding
-    if (_formKey.currentState!.validate()) {
-      debugPrint('Login pressed');
-      debugPrint('Email: ${_emailController.text}');
-      debugPrint('Password: ${_passwordController.text}');
+  Future<void> _onLoginPressed() async {
+    if (!_formKey.currentState!.validate()) return;
 
+    setState(() => _isSubmitting = true);
+
+    // Verify credentials against data saved during registration.
+    final error = await AuthService.instance.loginUser(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
+
+    if (!mounted) return;
+    setState(() => _isSubmitting = false);
+
+    if (error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Login validated! (Auth logic comes Day 8)'),
-        ),
+        SnackBar(content: Text(error), backgroundColor: Colors.red),
       );
-      // Day 8: verify credentials, then Navigator.pushNamed(context, AppRoutes.dashboard);
+      return;
     }
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Login successful!')));
+
+    // 👇 NEW: navigate to Dashboard on success
+    Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
   }
 
   void _onForgotPasswordPressed() {
-    // Wire this to AppRoutes.forgotPassword once that screen exists (Day 9)
+    Navigator.pushNamed(context, AppRoutes.forgotPassword);
     debugPrint('Navigate to Forgot Password screen');
   }
 
@@ -53,7 +69,6 @@ class _LoginScreenState extends State<LoginScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Form(
-              // 👈 NEW: wrap fields in Form
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -98,7 +113,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Email field
                   TextFormField(
-                    // was TextFormField already — good, just adding validator
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
@@ -111,7 +125,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       fillColor: Colors.white,
                     ),
                     validator: (value) {
-                      // 👈 NEW
                       if (value == null || value.trim().isEmpty) {
                         return 'Please enter your email';
                       }
@@ -152,7 +165,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       fillColor: Colors.white,
                     ),
                     validator: (value) {
-                      // 👈 NEW
                       if (value == null || value.isEmpty) {
                         return 'Password cannot be empty';
                       }
@@ -168,7 +180,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _onLoginPressed,
+                      onPressed: _isSubmitting
+                          ? null
+                          : _onLoginPressed, // 👈 NEW
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2F80ED),
                         foregroundColor: Colors.white,
@@ -177,7 +191,17 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text('Login'),
+                      child:
+                          _isSubmitting // 👈 NEW: spinner while verifying
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text('Login'),
                     ),
                   ),
                   const SizedBox(height: 16),

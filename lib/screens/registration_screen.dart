@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../routes/app_routes.dart';
+import '../services/auth_service.dart'; // 👈 FIX: was missing
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -19,6 +21,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -30,22 +33,36 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     super.dispose();
   }
 
-  void _onRegisterPressed() {
-    if (_formKey.currentState!.validate()) {
-      debugPrint('Registration successful');
-      debugPrint('Name: ${_fullNameController.text}');
-      debugPrint('Email: ${_emailController.text}');
-      debugPrint('Mobile: ${_mobileController.text}');
+  Future<void> _onRegisterPressed() async {
+    if (!_formKey.currentState!.validate()) return;
 
-      // Day 8: save this data (SharedPreferences or Firebase)
+    setState(() => _isSubmitting = true);
 
+    // 👇 FIX: this was just debugPrint before — data was never actually saved
+    final error = await AuthService.instance.registerUser(
+      fullName: _fullNameController.text.trim(),
+      email: _emailController.text.trim(),
+      mobile: _mobileController.text.trim(),
+      password: _passwordController.text,
+    );
+
+    if (!mounted) return;
+    setState(() => _isSubmitting = false);
+
+    if (error != null) {
+      // e.g. "An account with this email already exists"
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registration successful! Please login.')),
+        SnackBar(content: Text(error), backgroundColor: Colors.red),
       );
-
-      // Redirect to Login screen after successful registration
-      Navigator.pushReplacementNamed(context, AppRoutes.login);
+      return;
     }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Registration successful! Please login.')),
+    );
+
+    // Redirect to Login screen after successful registration
+    Navigator.pushReplacementNamed(context, AppRoutes.login);
   }
 
   @override
@@ -141,6 +158,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     controller: _mobileController,
                     keyboardType: TextInputType.phone,
                     maxLength: 10,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
                     decoration: InputDecoration(
                       labelText: 'Mobile Number',
                       prefixIcon: const Icon(Icons.phone_outlined),
@@ -241,7 +261,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   SizedBox(
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: _onRegisterPressed,
+                      onPressed: _isSubmitting ? null : _onRegisterPressed,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2F80ED),
                         foregroundColor: Colors.white,
@@ -249,7 +269,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text('Register'),
+                      child: _isSubmitting
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text('Register'),
                     ),
                   ),
                   const SizedBox(height: 16),
