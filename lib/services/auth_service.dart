@@ -98,4 +98,47 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_currentUserKey);
   }
+
+  /// Returns null on success, or an error message on failure.
+Future<String?> updateProfile({
+  required String email,
+  required String fullName,
+  required String mobile,
+}) async {
+  final users = await _getUsers();
+  final index = users.indexWhere(
+    (u) => u['email']?.toLowerCase() == email.toLowerCase(),
+  );
+
+  if (index == -1) return 'User not found';
+
+  users[index]['fullName'] = fullName;
+  users[index]['mobile'] = mobile;
+
+  await _saveUsers(users);
+  return null;
+}
+
+/// Returns null on success, or an error message on failure.
+Future<String?> changePassword({
+  required String email,
+  required String currentPassword,
+  required String newPassword,
+}) async {
+  final users = await _getUsers();
+  final index = users.indexWhere(
+    (u) => u['email']?.toLowerCase() == email.toLowerCase(),
+  );
+
+  if (index == -1) return 'User not found';
+
+  if (users[index]['password'] != currentPassword) {
+    return 'Current password is incorrect';
+  }
+
+  users[index]['password'] = newPassword;
+  await _saveUsers(users);
+  return null;
+}
+
 }
