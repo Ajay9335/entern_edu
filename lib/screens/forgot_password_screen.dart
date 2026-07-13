@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
+import '../utils/app_theme.dart';
 
-/// Simple flow: enter email -> show confirmation message.
+/// Sends a real Firebase password-reset email to the entered address.
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
@@ -12,6 +14,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   bool _submitted = false;
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -19,19 +22,36 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  void _onSubmit() {
+  Future<void> _onSubmit() async {
     if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isSubmitting = true);
+
+    final error = await AuthService.instance.sendPasswordResetEmail(
+      email: _emailController.text.trim(),
+    );
+
+    if (!mounted) return;
+    setState(() => _isSubmitting = false);
+
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
     setState(() => _submitted = true);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FB),
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF5F7FB),
+        backgroundColor: AppTheme.background,
         elevation: 0,
-        foregroundColor: const Color(0xFF1F2A44),
+        foregroundColor: AppTheme.black,
         title: const Text('Forgot Password'),
       ),
       body: SafeArea(
@@ -51,35 +71,26 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Icon(Icons.lock_reset, size: 64, color: Color(0xFF2F80ED)),
+          const Icon(Icons.lock_reset, size: 64, color: AppTheme.primaryOrange),
           const SizedBox(height: 20),
           const Text(
             'Reset your password',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1F2A44),
-            ),
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.black),
           ),
           const SizedBox(height: 8),
           const Text(
             "Enter your registered email and we'll send you a reset link",
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, color: Colors.grey),
+            style: TextStyle(fontSize: 14, color: AppTheme.textGray),
           ),
           const SizedBox(height: 28),
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Email',
-              prefixIcon: const Icon(Icons.email_outlined),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              filled: true,
-              fillColor: Colors.white,
+              prefixIcon: Icon(Icons.email_outlined),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
@@ -94,17 +105,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
           const SizedBox(height: 24),
           SizedBox(
-            height: 50,
+            height: 54,
             child: ElevatedButton(
-              onPressed: _onSubmit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2F80ED),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text('Send Reset Link'),
+              onPressed: _isSubmitting ? null : _onSubmit,
+              child: _isSubmitting
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Text('Send Reset Link'),
             ),
           ),
         ],
@@ -116,25 +126,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(
-          Icons.mark_email_read_outlined,
-          size: 72,
-          color: Color(0xFF2F80ED),
-        ),
+        const Icon(Icons.mark_email_read_outlined, size: 72, color: AppTheme.primaryOrange),
         const SizedBox(height: 20),
         const Text(
           'Check your email',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF1F2A44),
-          ),
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.black),
         ),
         const SizedBox(height: 8),
         Text(
           'A password reset link has been sent to ${_emailController.text.trim()}',
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 14, color: Colors.grey),
+          style: const TextStyle(fontSize: 14, color: AppTheme.textGray),
         ),
         const SizedBox(height: 24),
         TextButton(

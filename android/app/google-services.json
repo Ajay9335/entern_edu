@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "218969515573",
+    "project_id": "intern-edu",
+    "storage_bucket": "intern-edu.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:218969515573:android:6d87de881038398cd0737c",
+        "android_client_info": {
+          "package_name": "com.example.entern_edu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDr0PYpMXcbcrTOi9Z853m0FbF18cKJZ-U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../routes/app_routes.dart';
+import '../services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,10 +13,23 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
-      if (!mounted) return;
-      Navigator.pushReplacementNamed(context, AppRoutes.login);
-    });
+    _navigateNext();
+  }
+
+  Future<void> _navigateNext() async {
+    await Future.delayed(const Duration(seconds: 3));
+    if (!mounted) return;
+
+    // 👇 FIX: If user already logged in, skip straight to Dashboard.
+    // Otherwise send them to the Login/Sign Up choice screen
+    // (matches required flow: Splash → Login/Sign Up → Registration → Login → Dashboard)
+    final isLoggedIn = await AuthService.instance.isLoggedIn();
+    if (!mounted) return;
+
+    Navigator.pushReplacementNamed(
+      context,
+      isLoggedIn ? AppRoutes.dashboard : AppRoutes.signup,
+    );
   }
 
   @override
