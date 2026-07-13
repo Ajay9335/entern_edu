@@ -68,7 +68,6 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Back to home
               InkWell(
                 onTap: () => Navigator.maybePop(context),
                 borderRadius: BorderRadius.circular(30),
@@ -81,12 +80,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.white,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.arrow_back, size: 20, color: AppTheme.black),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        size: 20,
+                        color: AppTheme.black,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     const Text(
                       'Back to home',
-                      style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.black),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.black,
+                      ),
                     ),
                   ],
                 ),
@@ -114,13 +120,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
                         labelText: 'Email Address *',
-                        prefixIcon: Icon(Icons.mail_outline, color: AppTheme.textGray),
+                        prefixIcon: Icon(
+                          Icons.mail_outline,
+                          color: AppTheme.textGray,
+                        ),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Please enter your email';
                         }
-                        final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                        final emailRegex = RegExp(
+                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                        );
                         if (!emailRegex.hasMatch(value.trim())) {
                           return 'Enter a valid email address';
                         }
@@ -133,13 +144,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       obscureText: _obscurePassword,
                       decoration: InputDecoration(
                         labelText: 'Secret Key *',
-                        prefixIcon: const Icon(Icons.lock_outline, color: AppTheme.textGray),
+                        prefixIcon: const Icon(
+                          Icons.lock_outline,
+                          color: AppTheme.textGray,
+                        ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                            _obscurePassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
                             color: AppTheme.textGray,
                           ),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                         ),
                       ),
                       validator: (value) {
@@ -162,17 +180,24 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Checkbox(
                             value: _rememberMe,
                             activeColor: AppTheme.primaryOrange,
-                            onChanged: (v) => setState(() => _rememberMe = v ?? false),
+                            onChanged: (v) =>
+                                setState(() => _rememberMe = v ?? false),
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Text('Remember me', style: TextStyle(fontWeight: FontWeight.w600)),
+                        const Text(
+                          'Remember me',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
                         const Spacer(),
                         TextButton(
                           onPressed: _onForgotPasswordPressed,
                           child: const Text(
                             'Forgot Password',
-                            style: TextStyle(color: AppTheme.primaryOrange, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: AppTheme.primaryOrange,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -188,7 +213,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             ? const SizedBox(
                                 height: 20,
                                 width: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
                               )
                             : const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -207,10 +235,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         const Text("New to Intern-Edu?"),
                         TextButton(
-                          onPressed: () => Navigator.pushNamed(context, AppRoutes.registration),
+                          onPressed: () => Navigator.pushNamed(
+                            context,
+                            AppRoutes.registration,
+                          ),
                           child: const Text(
                             'Create account',
-                            style: TextStyle(color: AppTheme.primaryOrange, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: AppTheme.primaryOrange,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],

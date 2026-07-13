@@ -20,9 +20,6 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(seconds: 3));
     if (!mounted) return;
 
-    // 👇 FIX: If user already logged in, skip straight to Dashboard.
-    // Otherwise send them to the Login/Sign Up choice screen
-    // (matches required flow: Splash → Login/Sign Up → Registration → Login → Dashboard)
     final isLoggedIn = await AuthService.instance.isLoggedIn();
     if (!mounted) return;
 

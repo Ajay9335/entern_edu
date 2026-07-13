@@ -2,10 +2,6 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Hybrid auth: Firebase Auth handles login/register/password
-/// (free, no billing required). Extra profile fields (fullName, mobile)
-/// are stored locally in SharedPreferences, keyed by the Firebase UID —
-/// this avoids needing Firestore (which requires the Blaze billing plan).
 class AuthService {
   AuthService._();
   static final AuthService instance = AuthService._();
@@ -14,9 +10,16 @@ class AuthService {
 
   String _profileKey(String uid) => 'profile_$uid';
 
-  Future<void> _saveProfile(String uid, {required String fullName, required String mobile}) async {
+  Future<void> _saveProfile(
+    String uid, {
+    required String fullName,
+    required String mobile,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_profileKey(uid), jsonEncode({'fullName': fullName, 'mobile': mobile}));
+    await prefs.setString(
+      _profileKey(uid),
+      jsonEncode({'fullName': fullName, 'mobile': mobile}),
+    );
   }
 
   Future<Map<String, String>> _readProfile(String uid) async {
@@ -30,7 +33,6 @@ class AuthService {
     };
   }
 
-  /// Returns null on success, or an error message on failure.
   Future<String?> registerUser({
     required String fullName,
     required String email,
@@ -43,8 +45,11 @@ class AuthService {
         password: password,
       );
 
-      // Store extra profile fields locally, keyed by the Firebase UID.
-      await _saveProfile(credential.user!.uid, fullName: fullName, mobile: mobile);
+      await _saveProfile(
+        credential.user!.uid,
+        fullName: fullName,
+        mobile: mobile,
+      );
       await credential.user!.updateDisplayName(fullName);
 
       return null;
@@ -64,7 +69,6 @@ class AuthService {
     }
   }
 
-  /// Returns null on success, or an error message on failure.
   Future<String?> loginUser({
     required String email,
     required String password,
@@ -100,7 +104,9 @@ class AuthService {
 
     final profile = await _readProfile(firebaseUser.uid);
     return {
-      'fullName': profile['fullName']!.isNotEmpty ? profile['fullName']! : (firebaseUser.displayName ?? ''),
+      'fullName': profile['fullName']!.isNotEmpty
+          ? profile['fullName']!
+          : (firebaseUser.displayName ?? ''),
       'email': firebaseUser.email ?? '',
       'mobile': profile['mobile']!,
     };
@@ -114,7 +120,6 @@ class AuthService {
     await _auth.signOut();
   }
 
-  /// Returns null on success, or an error message on failure.
   Future<String?> updateProfile({
     required String email,
     required String fullName,
@@ -132,7 +137,6 @@ class AuthService {
     }
   }
 
-  /// Returns null on success, or an error message on failure.
   Future<String?> changePassword({
     required String email,
     required String currentPassword,
@@ -142,7 +146,6 @@ class AuthService {
       final user = _auth.currentUser;
       if (user == null) return 'User not found';
 
-      // Firebase requires re-authentication before a sensitive change like password update.
       final cred = EmailAuthProvider.credential(
         email: email.trim(),
         password: currentPassword,
@@ -160,8 +163,6 @@ class AuthService {
     }
   }
 
-  /// Sends a password-reset email via Firebase.
-  /// Returns null on success, or an error message on failure.
   Future<String?> sendPasswordResetEmail({required String email}) async {
     try {
       await _auth.sendPasswordResetEmail(email: email.trim());

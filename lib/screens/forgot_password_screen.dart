@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../utils/app_theme.dart';
 
-/// Sends a real Firebase password-reset email to the entered address.
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
@@ -76,7 +75,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           const Text(
             'Reset your password',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.black),
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.black,
+            ),
           ),
           const SizedBox(height: 8),
           const Text(
@@ -112,7 +115,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ? const SizedBox(
                       height: 20,
                       width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     )
                   : const Text('Send Reset Link'),
             ),
@@ -126,11 +132,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(Icons.mark_email_read_outlined, size: 72, color: AppTheme.primaryOrange),
+        const Icon(
+          Icons.mark_email_read_outlined,
+          size: 72,
+          color: AppTheme.primaryOrange,
+        ),
         const SizedBox(height: 20),
         const Text(
           'Check your email',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.black),
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: AppTheme.black,
+          ),
         ),
         const SizedBox(height: 8),
         Text(

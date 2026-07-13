@@ -45,7 +45,6 @@ class SignupScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
 
-                // Login button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -65,7 +64,6 @@ class SignupScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // Registration button
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(

@@ -14,19 +14,42 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   Map<String, String>? _user;
   bool _loading = true;
-  int _bottomTab = 0; // 0 = Overview, 1 = Profile, 2 = Settings
+  int _bottomTab = 0;
 
   bool _notificationsEnabled = true;
   bool _darkModeEnabled = false;
 
-  // Placeholder stats — all start at 0 since there's no backend yet
-  // to track real course/internship/training/query activity.
   final List<_StatItem> _stats = const [
-    _StatItem(icon: Icons.menu_book_outlined, label: 'ACTIVE\nCOURSES', value: '0', color: Color(0xFFF2924A)),
-    _StatItem(icon: Icons.work_outline, label: 'INTERNSHIPS', value: '0', color: Color(0xFFF2924A)),
-    _StatItem(icon: Icons.bolt_outlined, label: 'LIVE\nTRAINING', value: '0', color: Color(0xFF3FBF7F)),
-    _StatItem(icon: Icons.event_available_outlined, label: 'DAILY\nSTATUS', value: '0', color: Color(0xFF4C8BF5)),
-    _StatItem(icon: Icons.help_outline, label: 'QUERIES\nRAISED', value: '0', color: Color(0xFF9B6BF2)),
+    _StatItem(
+      icon: Icons.menu_book_outlined,
+      label: 'ACTIVE\nCOURSES',
+      value: '0',
+      color: Color(0xFFF2924A),
+    ),
+    _StatItem(
+      icon: Icons.work_outline,
+      label: 'INTERNSHIPS',
+      value: '0',
+      color: Color(0xFFF2924A),
+    ),
+    _StatItem(
+      icon: Icons.bolt_outlined,
+      label: 'LIVE\nTRAINING',
+      value: '0',
+      color: Color(0xFF3FBF7F),
+    ),
+    _StatItem(
+      icon: Icons.event_available_outlined,
+      label: 'DAILY\nSTATUS',
+      value: '0',
+      color: Color(0xFF4C8BF5),
+    ),
+    _StatItem(
+      icon: Icons.help_outline,
+      label: 'QUERIES\nRAISED',
+      value: '0',
+      color: Color(0xFF9B6BF2),
+    ),
   ];
 
   @override
@@ -73,8 +96,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         title: const Text('Logout'),
         content: const Text('Are you sure you want to logout?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Logout')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Logout'),
+          ),
         ],
       ),
     );
@@ -82,13 +111,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (confirm == true) {
       await AuthService.instance.logout();
       if (!mounted) return;
-      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        AppRoutes.login,
+        (route) => false,
+      );
     }
   }
 
   Future<void> _openEditProfile() async {
-    final nameController = TextEditingController(text: _user?['fullName'] ?? '');
-    final mobileController = TextEditingController(text: _user?['mobile'] ?? '');
+    final nameController = TextEditingController(
+      text: _user?['fullName'] ?? '',
+    );
+    final mobileController = TextEditingController(
+      text: _user?['mobile'] ?? '',
+    );
     final formKey = GlobalKey<FormState>();
 
     final saved = await showDialog<bool>(
@@ -104,7 +141,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               TextFormField(
                 controller: nameController,
                 decoration: const InputDecoration(labelText: 'Full Name'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Name required' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Name required' : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -113,7 +151,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 keyboardType: TextInputType.phone,
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) return 'Mobile required';
-                  if (v.trim().length != 10) return 'Enter valid 10-digit number';
+                  if (v.trim().length != 10)
+                    return 'Enter valid 10-digit number';
                   return null;
                 },
               ),
@@ -121,7 +160,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () {
               if (formKey.currentState!.validate()) {
@@ -144,9 +186,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (!mounted) return;
 
       if (error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error)));
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profile updated')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Profile updated')));
         _loadUser();
       }
     }
@@ -166,7 +212,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return StatefulBuilder(
           builder: (ctx, setDialogState) {
             return AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               title: const Text('Change Password'),
               content: Form(
                 key: formKey,
@@ -179,11 +227,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       decoration: InputDecoration(
                         labelText: 'Current Password',
                         suffixIcon: IconButton(
-                          icon: Icon(obscureCurrent ? Icons.visibility_off : Icons.visibility),
-                          onPressed: () => setDialogState(() => obscureCurrent = !obscureCurrent),
+                          icon: Icon(
+                            obscureCurrent
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: () => setDialogState(
+                            () => obscureCurrent = !obscureCurrent,
+                          ),
                         ),
                       ),
-                      validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                      validator: (v) =>
+                          (v == null || v.isEmpty) ? 'Required' : null,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -192,8 +247,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       decoration: InputDecoration(
                         labelText: 'New Password',
                         suffixIcon: IconButton(
-                          icon: Icon(obscureNew ? Icons.visibility_off : Icons.visibility),
-                          onPressed: () => setDialogState(() => obscureNew = !obscureNew),
+                          icon: Icon(
+                            obscureNew
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: () =>
+                              setDialogState(() => obscureNew = !obscureNew),
                         ),
                       ),
                       validator: (v) {
@@ -206,9 +266,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     TextFormField(
                       controller: confirmController,
                       obscureText: obscureNew,
-                      decoration: const InputDecoration(labelText: 'Confirm New Password'),
+                      decoration: const InputDecoration(
+                        labelText: 'Confirm New Password',
+                      ),
                       validator: (v) {
-                        if (v != newController.text) return 'Passwords do not match';
+                        if (v != newController.text)
+                          return 'Passwords do not match';
                         return null;
                       },
                     ),
@@ -216,7 +279,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: const Text('Cancel'),
+                ),
                 ElevatedButton(
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
@@ -242,9 +308,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (!mounted) return;
 
       if (error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error), backgroundColor: Colors.red),
+        );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password updated successfully')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password updated successfully')),
+        );
       }
     }
   }
@@ -281,15 +351,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
         backgroundColor: Colors.white,
         indicatorColor: AppTheme.primaryOrangeLight,
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard, color: AppTheme.primaryOrange), label: 'Overview'),
-          NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person, color: AppTheme.primaryOrange), label: 'Profile'),
-          NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings, color: AppTheme.primaryOrange), label: 'Settings'),
+          NavigationDestination(
+            icon: Icon(Icons.dashboard_outlined),
+            selectedIcon: Icon(Icons.dashboard, color: AppTheme.primaryOrange),
+            label: 'Overview',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person, color: AppTheme.primaryOrange),
+            label: 'Profile',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings, color: AppTheme.primaryOrange),
+            label: 'Settings',
+          ),
         ],
       ),
     );
   }
 
-  // ---------------- TOP BAR ----------------
   Widget _buildTopBar(String name) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -301,7 +382,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               borderRadius: BorderRadius.circular(24),
               child: Container(
                 padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
                 child: const Icon(Icons.menu, color: AppTheme.black),
               ),
             ),
@@ -309,15 +393,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
           const Spacer(),
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
             child: const Icon(Icons.notifications_none, color: AppTheme.black),
           ),
           const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(name.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-              const Text('GLOBAL LEARNER', style: TextStyle(fontSize: 10, color: AppTheme.textGray)),
+              Text(
+                name.toUpperCase(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+              const Text(
+                'GLOBAL LEARNER',
+                style: TextStyle(fontSize: 10, color: AppTheme.textGray),
+              ),
             ],
           ),
           const SizedBox(width: 10),
@@ -326,7 +422,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             backgroundColor: AppTheme.primaryOrange,
             child: Text(
               name.isNotEmpty ? name[0].toUpperCase() : '?',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
@@ -334,7 +433,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // ---------------- OVERVIEW TAB ----------------
   Widget _buildOverviewTab(String name) {
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -353,10 +451,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
         const SizedBox(height: 28),
         RichText(
           text: const TextSpan(
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.black),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.black,
+            ),
             children: [
               TextSpan(text: 'Daily Status '),
-              TextSpan(text: 'History', style: TextStyle(color: AppTheme.primaryOrange)),
+              TextSpan(
+                text: 'History',
+                style: TextStyle(color: AppTheme.primaryOrange),
+              ),
             ],
           ),
         ),
@@ -374,11 +479,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.show_chart, size: 36, color: AppTheme.textGray.withValues(alpha: 0.5)),
+                  Icon(
+                    Icons.show_chart,
+                    size: 36,
+                    color: AppTheme.textGray.withValues(alpha: 0.5),
+                  ),
                   const SizedBox(height: 10),
                   const Text(
                     'No status recorded yet',
-                    style: TextStyle(color: AppTheme.textGray, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      color: AppTheme.textGray,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   const Text(
@@ -394,7 +506,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // ---------------- PROFILE TAB ----------------
   Widget _buildProfileTab() {
     final name = _user?['fullName'] ?? 'Learner';
     final email = _user?['email'] ?? '-';
@@ -409,16 +520,37 @@ class _DashboardScreenState extends State<DashboardScreen> {
             backgroundColor: AppTheme.primaryOrange,
             child: Text(
               name.isNotEmpty ? name[0].toUpperCase() : '?',
-              style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
         const SizedBox(height: 16),
-        Center(child: Text(name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.black))),
+        Center(
+          child: Text(
+            name,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.black,
+            ),
+          ),
+        ),
         const SizedBox(height: 28),
-        _ProfileInfoTile(icon: Icons.email_outlined, label: 'Email', value: email),
+        _ProfileInfoTile(
+          icon: Icons.email_outlined,
+          label: 'Email',
+          value: email,
+        ),
         const SizedBox(height: 12),
-        _ProfileInfoTile(icon: Icons.phone_outlined, label: 'Mobile Number', value: mobile.isEmpty ? '-' : mobile),
+        _ProfileInfoTile(
+          icon: Icons.phone_outlined,
+          label: 'Mobile Number',
+          value: mobile.isEmpty ? '-' : mobile,
+        ),
         const SizedBox(height: 24),
         SizedBox(
           width: double.infinity,
@@ -430,7 +562,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               padding: const EdgeInsets.symmetric(vertical: 14),
               side: const BorderSide(color: AppTheme.primaryOrange),
               foregroundColor: AppTheme.primaryOrange,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
         ),
@@ -438,12 +572,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // ---------------- SETTINGS TAB ----------------
   Widget _buildSettingsTab() {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        const Text('Preferences', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textGray)),
+        const Text(
+          'Preferences',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.textGray,
+          ),
+        ),
         const SizedBox(height: 8),
         _SettingsSwitchTile(
           icon: Icons.notifications_outlined,
@@ -458,34 +598,58 @@ class _DashboardScreenState extends State<DashboardScreen> {
           onChanged: _setDarkMode,
         ),
         const SizedBox(height: 24),
-        const Text('Account', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textGray)),
+        const Text(
+          'Account',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.textGray,
+          ),
+        ),
         const SizedBox(height: 8),
         Padding(
           padding: const EdgeInsets.only(bottom: 12),
-          child: _SettingsActionTile(icon: Icons.lock_outline, title: 'Change Password', onTap: _openChangePassword),
+          child: _SettingsActionTile(
+            icon: Icons.lock_outline,
+            title: 'Change Password',
+            onTap: _openChangePassword,
+          ),
         ),
-        _SettingsActionTile(icon: Icons.logout, title: 'Logout', titleColor: Colors.red, onTap: _handleLogout),
+        _SettingsActionTile(
+          icon: Icons.logout,
+          title: 'Logout',
+          titleColor: Colors.red,
+          onTap: _handleLogout,
+        ),
       ],
     );
   }
 
-  // ---------------- SIDEBAR (matches website drawer) ----------------
   Widget _buildSidebar() {
     final items = <_SidebarItem>[
-      _SidebarItem(Icons.dashboard_outlined, 'Dashboard', active: true, onTap: () {
-        setState(() => _bottomTab = 0);
-        Navigator.pop(context);
-      }),
+      _SidebarItem(
+        Icons.dashboard_outlined,
+        'Dashboard',
+        active: true,
+        onTap: () {
+          setState(() => _bottomTab = 0);
+          Navigator.pop(context);
+        },
+      ),
       _SidebarItem(Icons.checklist_outlined, 'My Task'),
       _SidebarItem(Icons.work_outline, 'Internship'),
       _SidebarItem(Icons.school_outlined, 'Training'),
       _SidebarItem(Icons.play_circle_outline, 'Tutorial'),
       _SidebarItem(Icons.menu_book_outlined, 'E-Book'),
       _SidebarItem(Icons.event_available_outlined, 'Daily Status'),
-      _SidebarItem(Icons.badge_outlined, 'Personal Detail', onTap: () {
-        setState(() => _bottomTab = 1);
-        Navigator.pop(context);
-      }),
+      _SidebarItem(
+        Icons.badge_outlined,
+        'Personal Detail',
+        onTap: () {
+          setState(() => _bottomTab = 1);
+          Navigator.pop(context);
+        },
+      ),
       _SidebarItem(Icons.description_outlined, 'Documentation'),
       _SidebarItem(Icons.help_outline, 'Query'),
       _SidebarItem(Icons.mail_outline, 'Help'),
@@ -504,7 +668,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   Icon(Icons.auto_awesome, color: AppTheme.primaryOrange),
                   SizedBox(width: 10),
-                  Text('intern-edu', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text(
+                    'intern-edu',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -524,13 +695,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('MEMBER STATUS', style: TextStyle(color: AppTheme.textGray, fontSize: 10, letterSpacing: 1)),
+                  const Text(
+                    'MEMBER STATUS',
+                    style: TextStyle(
+                      color: AppTheme.textGray,
+                      fontSize: 10,
+                      letterSpacing: 1,
+                    ),
+                  ),
                   const SizedBox(height: 6),
                   Row(
                     children: const [
                       Icon(Icons.circle, size: 8, color: Colors.greenAccent),
                       SizedBox(width: 6),
-                      Text('GROWTH ACTIVE', style: TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 12)),
+                      Text(
+                        'GROWTH ACTIVE',
+                        style: TextStyle(
+                          color: Colors.greenAccent,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -538,7 +723,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.redAccent),
-              title: const Text('Logout', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w600)),
+              title: const Text(
+                'Logout',
+                style: TextStyle(
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               onTap: () {
                 Navigator.pop(context);
                 _handleLogout();
@@ -558,10 +749,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
         color: item.active ? AppTheme.primaryOrange : Colors.transparent,
         borderRadius: BorderRadius.circular(10),
         child: ListTile(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           leading: Icon(item.icon, color: Colors.white, size: 20),
-          title: Text(item.label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
-          onTap: item.onTap ??
+          title: Text(
+            item.label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+          onTap:
+              item.onTap ??
               () {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -574,14 +775,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 }
 
-// ---------------- SUPPORTING WIDGETS ----------------
-
 class _StatItem {
   final IconData icon;
   final String label;
   final String value;
   final Color color;
-  const _StatItem({required this.icon, required this.label, required this.value, required this.color});
+  const _StatItem({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 }
 
 class _StatCard extends StatelessWidget {
@@ -604,16 +808,31 @@ class _StatCard extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(7),
-            decoration: BoxDecoration(color: item.color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(
+              color: item.color.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
             child: Icon(item.icon, color: item.color, size: 16),
           ),
           const SizedBox(height: 10),
           Text(
             item.label,
-            style: const TextStyle(fontSize: 10, color: AppTheme.textGray, fontWeight: FontWeight.w600, height: 1.2),
+            style: const TextStyle(
+              fontSize: 10,
+              color: AppTheme.textGray,
+              fontWeight: FontWeight.w600,
+              height: 1.2,
+            ),
           ),
           const SizedBox(height: 4),
-          Text(item.value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.black)),
+          Text(
+            item.value,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.black,
+            ),
+          ),
         ],
       ),
     );
@@ -633,7 +852,11 @@ class _ProfileInfoTile extends StatelessWidget {
   final String label;
   final String value;
 
-  const _ProfileInfoTile({required this.icon, required this.label, required this.value});
+  const _ProfileInfoTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -652,9 +875,22 @@ class _ProfileInfoTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: const TextStyle(fontSize: 12, color: AppTheme.textGray)),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppTheme.textGray,
+                  ),
+                ),
                 const SizedBox(height: 2),
-                Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.black)),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.black,
+                  ),
+                ),
               ],
             ),
           ),
@@ -670,7 +906,12 @@ class _SettingsSwitchTile extends StatelessWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
 
-  const _SettingsSwitchTile({required this.icon, required this.title, required this.value, required this.onChanged});
+  const _SettingsSwitchTile({
+    required this.icon,
+    required this.title,
+    required this.value,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -699,7 +940,12 @@ class _SettingsActionTile extends StatelessWidget {
   final Color? titleColor;
   final VoidCallback onTap;
 
-  const _SettingsActionTile({required this.icon, required this.title, required this.onTap, this.titleColor});
+  const _SettingsActionTile({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+    this.titleColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -711,7 +957,13 @@ class _SettingsActionTile extends StatelessWidget {
       ),
       child: ListTile(
         leading: Icon(icon, color: titleColor ?? AppTheme.primaryOrange),
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.w600, color: titleColor ?? AppTheme.black)),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: titleColor ?? AppTheme.black,
+          ),
+        ),
         trailing: const Icon(Icons.chevron_right, size: 20),
         onTap: onTap,
       ),

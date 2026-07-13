@@ -12,9 +12,7 @@ import 'utils/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const InternEduApp());
 }
 
@@ -26,9 +24,6 @@ class InternEduApp extends StatelessWidget {
     return MaterialApp(
       title: 'Intern Edu',
       debugShowCheckedModeBanner: false,
-      // 👇 FIX: use the shared AppTheme instead of a separate inline theme,
-      // so colors match what DashboardScreen widgets reference
-      // (AppTheme.primaryColor, etc.)
       theme: AppTheme.themeData,
       initialRoute: AppRoutes.splash,
       routes: {
