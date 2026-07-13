@@ -151,8 +151,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 keyboardType: TextInputType.phone,
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) return 'Mobile required';
-                  if (v.trim().length != 10)
+                  if (v.trim().length != 10) {
                     return 'Enter valid 10-digit number';
+                  }
                   return null;
                 },
               ),
@@ -270,8 +271,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         labelText: 'Confirm New Password',
                       ),
                       validator: (v) {
-                        if (v != newController.text)
+                        if (v != newController.text) {
                           return 'Passwords do not match';
+                        }
                         return null;
                       },
                     ),
